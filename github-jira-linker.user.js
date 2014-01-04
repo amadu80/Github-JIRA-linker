@@ -4,7 +4,7 @@
 // @namespace   github-jira-linker
 // @description Link JIRA issues on Github to JIRA.
 // @author      Hosh Sadiq <superaktieboy@gmail.com> http://github.com/hoshsadiq
-// @version     1.0
+// @version     1.0.1
 // @homepage    https://github.com/hoshsadiq/github-jira-linker
 // @updateURL   https://github.com/hoshsadiq/github-jira-linker/blob/master/github-jira-linker.user.meta.js
 // @match       http://*.github.com/*
@@ -27,7 +27,7 @@ var defaults = {
         jira_link_color_h: '#bf0500',
         jira_link_color_none: '#00468f'
     },
-    projectList = GM_getValue('jira_link_projects').toLowerCase().split(','),
+    projectList = GM_getValue('jira_link_projects', defaults.jira_link_projects).toLowerCase().split(','),
     settingsPage = '\
 <div class="boxed-group">\
     <h3>JIRA link settings</h3>\
