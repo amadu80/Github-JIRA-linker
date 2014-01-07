@@ -4,7 +4,7 @@
 // @namespace   github-jira-linker
 // @description Link JIRA issues on Github to JIRA.
 // @author      Hosh Sadiq <superaktieboy@gmail.com> http://github.com/hoshsadiq
-// @version     1.0.1
+// @version     1.1
 // @homepage    https://github.com/hoshsadiq/github-jira-linker
 // @updateURL   https://github.com/hoshsadiq/github-jira-linker/blob/master/github-jira-linker.user.meta.js
 // @match       http://*.github.com/*
@@ -92,13 +92,21 @@ function findAndReplace(regex, replacement, searchNode) {
         i, node;
 
     for (i in nodes) {
+//        if(nodes.hasOwnProperty(i)) {
         node = nodes[i];
-        if (node.nodeType === Node.ELEMENT_NODE && excludes.indexOf(node.nodeName.toLowerCase()) === -1) {
-            arguments.callee(regex, replacement, node);
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            if(node.getAttribute('class') && ' ' + node.getAttribute('class').indexOf(' jira-issue') > -1) {
+                continue;
+            }
+            if (excludes.indexOf(node.nodeName.toLowerCase()) === -1) {
+                arguments.callee(regex, replacement, node);
+            }
         }
+
         if (node.nodeType !== Node.TEXT_NODE || !regex.test(node.data)) {
             continue;
         }
+        //
         var parent = node.parentNode,
             frag = (function () {
                 var wrap = document.createElement('div'),
@@ -113,6 +121,7 @@ function findAndReplace(regex, replacement, searchNode) {
         parent.insertBefore(frag, node);
         parent.removeChild(node);
     }
+//    }
 }
 
 $('#page-settings .settings-content').on('keyup keydown', '.jira-gm-auto-save',function () {
@@ -126,39 +135,36 @@ $('body').on('click', 'a.jira-issue', function (e) {
     return false;
 });
 
+(function ($) {
+
+    gmMain();
+    $(document).ajaxSuccess(function (event, request, settings) {
+        gmMain();
+    });
+
+})(unsafeWindow.jQuery);
+
 GM_addStyle('a.jira-issue { width: 16px; height: 16px; display: inline-block; background-repeat: no-repeat; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABMklEQVQ4jY2TvVHDQBBGnzwuwLGj6wCpAsTQgB1sbodEhgooQSZyaBNvgBrQjKnApgIuIlYHJvDKLNINeJO7uf327Xd/2aaZnoAd8PJw/3Xkitg00xxYAYsxUAAVcNg00wjsgQ+gD8uBG6AEgumKzFFLo87+MVCb2z1AllIYbGJdMTdtV+TjAhCNJ6O/q4R1CiwaH4FbYKYSMoCxy0ezPxONR+teWe7JXFROC8DIAV7dvDI3rYlrYJvSesDakXMrKIA58Mb55Lvuly3+OkTRmAMHt7SzcWFjC9yphMsVD25BNC56dn3MVULtF0Z9hUrYActE8bJfnARY7BOQSUo4AIjGEvjsurrUs2gM1zhY2bjlfPed7YnL/Qko3TxyfkRdDP5JCtDttVYJrUqI/PzM0Bd/AwZuWskVNmmFAAAAAElFTkSuQmCC); }');
 GM_addStyle('span.jira-issue.jira-issue-type-F { color: ' + GM_getValue('jira_link_color_f', defaults.jira_link_color_f) + '; }');
 GM_addStyle('span.jira-issue.jira-issue-type-B { color: ' + GM_getValue('jira_link_color_b', defaults.jira_link_color_b) + '; }');
 GM_addStyle('span.jira-issue.jira-issue-type-H { color: ' + GM_getValue('jira_link_color_h', defaults.jira_link_color_h) + '; }');
 GM_addStyle('span.jira-issue.jira-issue-type-none { color: ' + GM_getValue('jira_link_color_none', defaults.jira_link_color_none) + '; }');
 
-setInterval(
-    function () {
-        if (this.lastPathStr !== location.pathname || this.lastQueryStr !== location.search || this.lastHashStr !== location.hash) {
-            this.lastPathStr = location.pathname;
-            this.lastQueryStr = location.search;
-            this.lastHashStr = location.hash;
-            gmMain();
-        }
-    },
-    100
-);
+
+// because of some sort of bug, getURI() should be used.
+var jiraURI = GM_getValue('jira_link_url');
+function getURI() {
+    return jiraURI || GM_getValue('jira_link_url');
+}
 
 function gmMain() {
-    setTimeout(function () {
-        if ($('#js-repo-pjax-container').children().first().hasClass('hasJiraIssues')) {
-            return;
+    findAndReplace(/(?:([FBH])(?:_|\-))?(([A-Z]+)\-([0-9]+))/g, function (match, type, jiraIssue, project, id) {
+        if (projectList.indexOf(project.toLowerCase()) === -1) {
+            return match;
         }
-        findAndReplace(/(?:([FBH])\-)?(([A-Z]+)\-([0-9]+))/g, function (match, type, jiraIssue, project, id) {
-            if (projectList.indexOf(project.toLowerCase()) === -1) {
-                return match;
-            }
+        var classes = 'jira-issue ' + ((!!type) ? 'jira-issue-type-' + type : 'jira-issue-type-none');
 
-            var classes = 'jira-issue ' + ((!!type) ? 'jira-issue-type-' + type : 'jira-issue-type-none');
-
-            return '<a class="' + classes + '" href="https://' + GM_getValue('jira_link_url') + '/browse/' + jiraIssue + '" target="_blank"></a>' +
-                '<span class="' + classes + '">' + match + '</span>';
-        });
-        $('#js-repo-pjax-container').children().first().addClass('hasJiraIssues');
-    }, 500);
+        return '<a class="' + classes + '" href="https://' + getURI() + '/browse/' + jiraIssue + '" target="_blank"></a>' +
+            '<span class="' + classes + '">' + match + '</span>';
+    });
 }
