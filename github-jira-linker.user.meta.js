@@ -4,7 +4,7 @@
 // @namespace   github-jira-linker
 // @description Link JIRA issues on Github to JIRA.
 // @author      Hosh Sadiq <superaktieboy@gmail.com> http://github.com/hoshsadiq
-// @version     1.1.1
+// @version     1.1.2
 // @homepage    https://github.com/hoshsadiq/github-jira-linker
 // @updateURL   https://github.com/hoshsadiq/github-jira-linker/blob/master/github-jira-linker.user.meta.js
 // @match       http://*.github.com/*
