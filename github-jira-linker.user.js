@@ -6,7 +6,7 @@
 // @author      Hosh Sadiq <superaktieboy@gmail.com> http://github.com/hoshsadiq
 // @version     1.1.2
 // @homepage    https://github.com/hoshsadiq/github-jira-linker
-// @updateURL   https://github.com/hoshsadiq/github-jira-linker/blob/master/github-jira-linker.user.meta.js
+// @updateURL   https://raw2.github.com/hoshsadiq/Github-JIRA-linker/master/github-jira-linker.user.meta.js
 // @match       http://*.github.com/*
 // @match       https://*.github.com/*
 // @include     https://github.com/*

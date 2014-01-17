@@ -21,6 +21,6 @@ Install
 
 For Firefox use either [Scriptish](https://addons.mozilla.org/en-US/firefox/addon/scriptish/) (preferred) or [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/). For Chrome use [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en).
 
-Then just install [this file](https://github.com/hoshsadiq/Github-JIRA-linker/blob/master/github-jira-linker.user.js).
+Then just install [this file](https://raw2.github.com/hoshsadiq/Github-JIRA-linker/master/github-jira-linker.user.js).
 
 Then go to settings and change the settings at the bottom of the page.
